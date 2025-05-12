@@ -144,6 +144,18 @@ section {
     }
 }
 
+/* Footer Styling */
+footer ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    gap: 0.625rem;
+    justify-content: center;
+}
+footer img {
+    width: 2.5rem;
+}
+
 /* Pages Styling */
 #hero .container {
     max-width: 66.66%;
