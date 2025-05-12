@@ -50,6 +50,14 @@ h2 {
     font-weight: 600;
     line-height: 1.3em;
 }
+@media (max-width: 767px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    h2 {
+        font-size: 2rem;
+    }
+}
 h3 { 
     font-size: 1.5rem;
     font-weight: 500;
@@ -89,19 +97,19 @@ section {
 }
 @media (max-width: 1024px) {
     section {
-        width: 100%
+        width: 100%;
     }
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem 5rem;
-    align-items: center;
+.container {
+    max-width: 1140px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
-@media (max-width: 1024px) {
-    .grid {
-        grid-template-columns: 1fr;
+@media (max-width: 1140px) {
+    .container {
+        width: 100%;
     }
 }
 
@@ -111,6 +119,7 @@ section {
     border: 1px solid var(--border-color);
     border-radius: 1rem;
     box-shadow: var(--shadow);
+    margin: auto;
     padding: 3.75rem;
 }
 @media (max-width: 1140px) {
@@ -120,41 +129,64 @@ section {
     }
 }
 
+.container-grid {
+    max-width: 1140px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 5rem;
+    align-items: center;
+    margin: auto;
+}
+@media (max-width: 1024px) {
+    .container-grid {
+        max-width: 100%;
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Pages Styling */
 #hero .container {
-    max-width: 60%;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
+    max-width: 66.66%;
 }
-#hero .img-1 {
-    height: 6rem;
-    object-fit: contain;
-    margin-bottom: 0.313rem;
-}
-#hero span {
-    color: var(--text-color);
-    font-size: 1.5rem;
-}
-#hero .img-2 {
-    height: 4rem;
-    object-fit: contain;
-    margin-bottom: 0.313rem;
-}
-#hero h1 {
-    font-size: 4rem;
+@media (min-width: 1440px) {
+    #hero .container {
+        max-width: 50%;
+    }
 }
 @media (max-width: 1024px) {
     #hero .container {
         max-width: 100%;
     }
+}
+
+#hero .img-1 {
+    height: 6rem;
+    object-fit: contain;
+    margin-bottom: 0.313rem;
+}
+
+#hero span {
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+#hero .img-2 {
+    height: 4rem;
+    object-fit: contain;
+    margin-bottom: 0.313rem;
+}
+@media (max-width: 1024px) {
     #hero .img-2 {
         height: 2.5rem;
     }
+}
+
+@media (min-width: 1040px) {
     #hero h1 {
-        font-size: 2.5rem;
+        font-size: 4rem;
     }
 }
+
 
 #about .img-1 {
     border: 0.935rem solid white;
@@ -166,11 +198,11 @@ section {
     padding-left: unset;
 }
 
+
 #portfolio .container {
-    display: flex;
-    flex-direction: column;
     gap: 2.5rem;
 }
+
 #portfolio .container div {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -186,6 +218,7 @@ section {
         grid-template-columns: 1fr;
     }
 }
+
 #portfolio .container div a {
     text-decoration: none;
     transition: all 0.2s linear;
@@ -193,6 +226,7 @@ section {
 #portfolio .container div a:hover {
     transform: scale(0.98);
 }
+
 #portfolio .container div img {
     border-radius: 0.313rem;
 }
