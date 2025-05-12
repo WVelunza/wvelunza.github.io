@@ -158,11 +158,11 @@ footer img {
 
 /* Pages Styling */
 #hero .container {
-    max-width: 66.66%;
+    max-width: 75%;
 }
 @media (min-width: 1440px) {
     #hero .container {
-        max-width: 50%;
+        max-width: 66.66%;
     }
 }
 @media (max-width: 1024px) {
