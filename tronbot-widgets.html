@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: PURPLE; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: ORANGE; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -135,45 +135,33 @@
                 }
             }
             
-// Helper to extract domain and locationId from URL - TEMPLATE VARIABLE APPROACH
-function getDomainAndLocationId() {
-    let domain = '';
-    let locationId = '{{location.id}}'; // Use template variable!
-    
-    // Get domain from referrer (this works and is completely dynamic)
-    if (document.referrer) {
-        try {
-            const referrerUrl = new URL(document.referrer);
-            domain = referrerUrl.origin;
-        } catch (e) {
-            console.log('Could not parse referrer URL');
-        }
-    }
-    
-    // Fallback domain if no referrer
-    if (!domain) {
-        domain = window.location.origin;
-    }
-    
-    console.log('Using template variables:');
-    console.log('Domain:', domain);
-    console.log('LocationId template:', locationId);
-    
-    return {
-        domain: domain,
-        locationId: locationId
-    };
-}
+            // Helper to extract domain from referrer (for other widgets that might need it)
+            function getDomainFromReferrer() {
+                if (document.referrer) {
+                    try {
+                        const referrerUrl = new URL(document.referrer);
+                        return referrerUrl.origin;
+                    } catch (e) {
+                        console.log('Could not parse referrer URL');
+                    }
+                }
+                return window.location.origin;
+            }
             
             // Quick Links Setup
             function setupQuickLinks(quickLinksBox) {
-                const { domain, locationId } = getDomainAndLocationId();
+                // Get domain dynamically from referrer
+                const domain = getDomainFromReferrer();
                 
+                console.log('Quick Links using domain:', domain);
+                console.log('Quick Links will use template variable {{location.id}} for location ID');
+                
+                // Use template variable directly in URLs - this should be processed by the templating system
                 const quickLinks = [
-                    { heading: "New Lead", description: "Grow your database", url: `${domain}/v2/location/${locationId}/contacts/smart_list/All` },
-                    { heading: "Schedule", description: "Book new meeting", url: `${domain}/v2/location/${locationId}/calendars/view` },
-                    { heading: "Social Post", description: "Stay in front of your fans today!", url: `${domain}/v2/location/${locationId}/marketing/social-planner/planner` },
-                    { heading: "Email Blast", description: "The GOLD is in the follow up!", url: `${domain}/v2/location/${locationId}/marketing/emails/scheduled?pageNumber=1` }
+                    { heading: "New Lead", description: "Grow your database", url: `${domain}/v2/location/{{location.id}}/contacts/smart_list/All` },
+                    { heading: "Schedule", description: "Book new meeting", url: `${domain}/v2/location/{{location.id}}/calendars/view` },
+                    { heading: "Social Post", description: "Stay in front of your fans today!", url: `${domain}/v2/location/{{location.id}}/marketing/social-planner/planner` },
+                    { heading: "Email Blast", description: "The GOLD is in the follow up!", url: `${domain}/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1` }
                 ];
                 
                 const quickLinksList = quickLinksBox.querySelector('.tronbot-quick-links-list');
