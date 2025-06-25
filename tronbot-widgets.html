@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: SILVER; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: BLACK; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -120,48 +120,44 @@
                         `;
                         setupTodoWidget(box);
                     } else {
-                        // Quick Links Box - with template variables directly in HTML
+                        // Quick Links Box - hardcoded domain, template location ID
                         box.innerHTML = `
                             <div class="tronbot-box-header">
                                 <img src="${icons.quickLinks}" alt="Links">
                                 Quick Links
                             </div>
                             <div class="tronbot-quick-links-list">
-                                <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/contacts/smart_list/All', '_parent')">
+                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/contacts/smart_list/All">
                                     <img src="https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png" alt="New Lead">
                                     <div>
                                         <div>New Lead</div>
                                         <div>Grow your database</div>
                                     </div>
-                                </div>
-                                <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/calendars/view', '_parent')">
+                                </a>
+                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/calendars/view">
                                     <img src="https://img.icons8.com/ios/40/ffffff/calendar--v1.png" alt="Schedule">
                                     <div>
                                         <div>Schedule</div>
                                         <div>Book new meeting</div>
                                     </div>
-                                </div>
-                                <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/marketing/social-planner/planner', '_parent')">
+                                </a>
+                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/social-planner/planner">
                                     <img src="https://img.icons8.com/ios/40/ffffff/share-2.png" alt="Social Post">
                                     <div>
                                         <div>Social Post</div>
                                         <div>Stay in front of your fans today!</div>
                                     </div>
-                                </div>
-                                <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1', '_parent')">
+                                </a>
+                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1">
                                     <img src="https://img.icons8.com/ios/40/ffffff/new-post.png" alt="Email Blast">
                                     <div>
                                         <div>Email Blast</div>
                                         <div>The GOLD is in the follow up!</div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         `;
                     }
-                    
-                    container.appendChild(box);
-                }
-            }
             
             // Helper to extract domain from referrer (for other widgets that might need it)
             function getDomainFromReferrer() {
