@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: red; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: GREEN; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -135,57 +135,86 @@
                 }
             }
             
-// Helper to extract domain and locationId from URL parameters or parent window
+// Helper to extract domain and locationId from URL (DEBUG VERSION)
 function getDomainAndLocationId() {
-    // Method 1: Try to get from URL parameters (most reliable for embedded content)
+    console.log('=== DEBUGGING DOMAIN AND LOCATION ID ===');
+    
+    // Method 1: Try to get from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const domain = urlParams.get('domain');
     const locationId = urlParams.get('locationId');
     
+    console.log('Current URL:', window.location.href);
+    console.log('URL Params - domain:', domain);
+    console.log('URL Params - locationId:', locationId);
+    
     if (domain && locationId) {
+        console.log('Using URL parameters method');
         return { domain, locationId };
     }
     
     // Method 2: Try to get from document.referrer
+    console.log('Document referrer:', document.referrer);
     if (document.referrer) {
         try {
             const referrerUrl = new URL(document.referrer);
+            console.log('Referrer origin:', referrerUrl.origin);
+            console.log('Referrer pathname:', referrerUrl.pathname);
+            
             const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
+            console.log('Referrer path match:', match);
+            
             if (match) {
-                return {
+                const result = {
                     domain: referrerUrl.origin,
                     locationId: match[1]
                 };
+                console.log('Using referrer method:', result);
+                return result;
             }
         } catch (e) {
-            console.log('Could not parse referrer URL');
+            console.log('Could not parse referrer URL:', e);
         }
     }
     
-    // Method 3: Try parent window (may fail due to cross-origin)
+    // Method 3: Try parent window
     try {
         if (window.parent !== window) {
+            console.log('Trying parent window...');
             const { origin, pathname } = window.parent.location;
+            console.log('Parent origin:', origin);
+            console.log('Parent pathname:', pathname);
+            
             const match = pathname.match(/\/location\/([^/]+)/);
+            console.log('Parent path match:', match);
+            
             if (match) {
-                return {
+                const result = {
                     domain: origin,
                     locationId: match[1]
                 };
+                console.log('Using parent window method:', result);
+                return result;
             }
         }
     } catch (error) {
-        console.log('Cannot access parent location due to cross-origin restrictions');
+        console.log('Cannot access parent location:', error);
     }
     
-    // Fallback: Use current window location (original behavior)
+    // Fallback: Use current window location
+    console.log('Using fallback method (current window)');
     const { origin, pathname } = window.location;
     const match = pathname.match(/\/location\/([^/]+)/);
     
-    return {
+    const result = {
         domain: origin,
         locationId: match ? match[1] : ''
     };
+    
+    console.log('Final result:', result);
+    console.log('=== END DEBUG ===');
+    
+    return result;
 }
             
             // Quick Links Setup
