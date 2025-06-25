@@ -14,7 +14,7 @@
         body { font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: transparent; }
         
         /* Tronbot Widgets Styles */
-        .tronbot-box-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.125rem; padding: 1rem; }
+        .tronbot-box-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr )); gap: 1.125rem; padding: 1rem; }
         .tronbot-box { min-height: 200px; display: flex; flex-direction: column; gap: 1.125rem; background: white; border: 1px solid #e1e1e1; border-radius: 1rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); padding: 1.25rem; transition: all 0.2s ease; }
         .tronbot-box-header { display: flex; align-items: center; gap: 0.625rem; color: #1a3557; font-size: 1rem; font-weight: 600; line-height: 1.3em; border-bottom: 1px solid #e1e1e1; padding-bottom: 1.25rem; }
         .tronbot-box-header img { width: 1.875rem; height: 1.875rem; }
@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: BROWN; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: RED; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -63,6 +63,25 @@
     <script>
         (function() {
             'use strict';
+
+            // Function to get a query parameter from the URL
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // Determine the location ID
+            // Priority: 1. window.highLevelLocationId (if set by parent page)
+            //           2. 'locationId' query parameter in the URL
+            //           3. Fallback to an empty string or handle error
+            let highLevelLocationId = window.highLevelLocationId || getQueryParam('locationId');
+
+            if (!highLevelLocationId) {
+                console.warn("HighLevel Location ID not found. Quick Links may not function correctly. Please ensure 'window.highLevelLocationId' is set or 'locationId' is a URL query parameter.");
+                // Optionally, you can set a default or prevent the links from being generated
+                // For now, we'll proceed with an empty string, which will result in broken links.
+                highLevelLocationId = ''; 
+            }
             
             // Initialize widgets
             function initializeTronbotWidgets() {
@@ -78,7 +97,7 @@
                 };
                 
                 // Create main widget boxes
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 1; i <= 4; i++ ) {
                     const box = document.createElement('div');
                     box.className = 'tronbot-box';
                     
@@ -128,7 +147,8 @@
                             </div>
                             <div class="tronbot-quick-links-list"></div>
                         `;
-                        setupQuickLinks(box);
+                        // Pass the dynamically determined highLevelLocationId to setupQuickLinks
+                        setupQuickLinks(box, highLevelLocationId);
                     }
                                         
                     container.appendChild(box);
@@ -136,15 +156,15 @@
             }
             
             // Quick Links Setup
-            function setupQuickLinks(quickLinksBox) {
+            // Now accepts locationId as an argument
+            function setupQuickLinks(quickLinksBox, locationId) {
                 const quickLinks = [
-                    { heading: "New Lead", description: "Grow your database", url: `https://go.rise-crm.com/v2/location/{{location.id}}/contacts/smart_list/All` },
-                    { heading: "Schedule", description: "Book new meeting", url: `https://go.rise-crm.com/v2/location/{{location.id}}/calendars/view` },
-                    { heading: "Social Post", description: "Stay in front of your fans today!", url: `https://go.rise-crm.com/v2/location/{{location.id}}/marketing/social-planner/planner` },
-                    { heading: "Email Blast", description: "The GOLD is in the follow up!", url: `https://go.rise-crm.com/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1` }
+                    { heading: "New Lead", description: "Grow your database", url: `https://go.rise-crm.com/v2/location/${locationId}/contacts/smart_list/All` },
+                    { heading: "Schedule", description: "Book new meeting", url: `https://go.rise-crm.com/v2/location/${locationId}/calendars/view` },
+                    { heading: "Social Post", description: "Stay in front of your fans today!", url: `https://go.rise-crm.com/v2/location/${locationId}/marketing/social-planner/planner` },
+                    { heading: "Email Blast", description: "The GOLD is in the follow up!", url: `https://go.rise-crm.com/v2/location/${locationId}/marketing/emails/scheduled?pageNumber=1` }
                 ];
                 
-                const quickLinksList = quickLinksBox.querySelector('.tronbot-quick-links-list');
                 const quickLinksIcons = {
                     "New Lead": "https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png",
                     "Schedule": "https://img.icons8.com/ios/40/ffffff/calendar--v1.png",
@@ -152,6 +172,13 @@
                     "Email Blast": "https://img.icons8.com/ios/40/ffffff/new-post.png"
                 };
                 
+                const quickLinksList = quickLinksBox.querySelector('.tronbot-quick-links-list' );
+
+                if (!locationId) {
+                    quickLinksList.innerHTML = '<p style="color: red; font-size: 0.9em;">Location ID not available. Quick links cannot be generated.</p>';
+                    return;
+                }
+
                 quickLinks.forEach(link => {
                     const row = document.createElement('div');
                     row.className = 'tronbot-quick-link-row';
@@ -182,13 +209,13 @@
             
             // Weather Widget Setup
             function setupWeatherWidget(weatherBox) {
-                const apiKey = '562d06561410e9426acdbf7d98e60dee';
-                
+                const apiKey = '562d06561410e9426acdbf7d98e60dee'; // This API key is publicly visible, consider server-side proxy for production
+
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
                             const { latitude, longitude } = position.coords;
-                            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`)
+                            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial` )
                                 .then(response => response.json())
                                 .then(data => {
                                     const temperature = Math.round(data.main.temp);
@@ -196,11 +223,11 @@
                                     const weatherDesc = data.weather[0].description;
                                     
                                     let iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/cloudy-day-1.svg";
-                                    if (weather.includes("rain")) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/rainy-6.svg";
-                                    else if (weather.includes("cloud")) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/cloudy-day-3.svg";
-                                    else if (weather.includes("snow")) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/snowy-6.svg";
-                                    else if (temperature >= 86) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/day.svg";
-                                    else if (temperature <= 50) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/snowy-3.svg";
+                                    if (weather.includes("rain" )) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/rainy-6.svg";
+                                    else if (weather.includes("cloud" )) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/cloudy-day-3.svg";
+                                    else if (weather.includes("snow" )) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/snowy-6.svg";
+                                    else if (temperature >= 86 ) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/day.svg";
+                                    else if (temperature <= 50 ) iconUrl = "https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/snowy-3.svg";
                                     
                                     weatherBox.innerHTML = `
                                         <div class="tronbot-box-header">
@@ -214,7 +241,7 @@
                                             <div>${weatherDesc}</div>
                                         </div>
                                     `;
-                                })
+                                } )
                                 .catch(() => {
                                     weatherBox.innerHTML = `
                                         <div class="tronbot-box-header">
@@ -223,7 +250,7 @@
                                         </div>
                                         <div class="tronbot-weather-content">Unable to fetch weather data</div>
                                     `;
-                                });
+                                } );
                         },
                         () => {
                             weatherBox.innerHTML = `
@@ -234,7 +261,7 @@
                                 <div class="tronbot-weather-content">Location access denied</div>
                             `;
                         }
-                    );
+                     );
                 } else {
                     weatherBox.innerHTML = `
                         <div class="tronbot-box-header">
@@ -247,7 +274,7 @@
             }
             
             // Tips Widget Setup
-            function setupTipsWidget(tipsBox) {
+            function setupTipsWidget(tipsBox ) {
                 const tips = [
                     { title: "Use Tags Effectively", description: "Navigate to the 'Tags' section in the settings menu. Click on 'Create New Tag' and give it a meaningful name. Assign the tag to contacts by editing their profiles. Use tags to filter and segment your contacts for targeted campaigns." },
                     { title: "Automate Follow-Ups", description: "Go to the 'Workflows' section in your dashboard. Create a new workflow and add a follow-up email or SMS action. Set the timing for the follow-up (e.g., 1 day after contact). Activate the workflow to automate your follow-ups." },
@@ -270,7 +297,7 @@
             }
             
             // Todo Widget Setup
-            function setupTodoWidget(todoBox) {
+            function setupTodoWidget(todoBox ) {
                 const todoList = todoBox.querySelector('.tronbot-todo-list');
                 const todoInput = todoBox.querySelector('.tronbot-todo-input');
                 const progressBar = todoBox.querySelector('.tronbot-progress-bar-fill');
