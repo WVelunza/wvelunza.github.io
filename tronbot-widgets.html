@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: BLACK; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: LIME; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -35,8 +35,8 @@
         
         /* Quick Links */
         .tronbot-quick-links-list { width: 100%; display: flex; flex-direction: column; gap: 1.125rem; }
-        .tronbot-quick-link-row { cursor: pointer; display: flex; align-items: center; gap: 1rem; background: linear-gradient(45deg, rgb(2, 168, 214) 0%, rgb(58, 74, 96) 100%); color: white; border-radius: 0.625rem; box-shadow: 0 5px 15px rgba(27, 127, 162, 0.25); padding: 1rem; transition: all 0.2s linear; }
-        .tronbot-quick-link-row:hover { transform: translateY(-2px) scale(1.015); }
+        .tronbot-quick-link-row { cursor: pointer; display: flex; align-items: center; gap: 1rem; background: linear-gradient(45deg, rgb(2, 168, 214) 0%, rgb(58, 74, 96) 100%); color: white; border-radius: 0.625rem; box-shadow: 0 5px 15px rgba(27, 127, 162, 0.25); padding: 1rem; transition: all 0.2s linear; text-decoration: none; }
+        .tronbot-quick-link-row:hover { transform: translateY(-2px) scale(1.015); color: white; text-decoration: none; }
         .tronbot-quick-link-row img { width: 1.875rem; height: 1.875rem; flex-shrink: 0; filter: brightness(1.5) grayscale(1); }
         .tronbot-quick-link-row > div { display: flex; flex-direction: column; justify-content: center; }
         .tronbot-quick-link-row > div > div:first-child { font-size: 1rem; font-weight: 600; line-height: 1.3em; color: white; }
@@ -57,7 +57,44 @@
 </head>
 <body>
     <div class="tronbot-box-container" id="tronbot-widgets-container">
-        <!-- Widgets will be dynamically inserted here -->
+        <!-- Quick Links with template variables in static HTML -->
+        <div class="tronbot-box">
+            <div class="tronbot-box-header">
+                <img src="https://img.icons8.com/ios/50/1a3557/link--v1.png" alt="Links">
+                Quick Links
+            </div>
+            <div class="tronbot-quick-links-list">
+                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/contacts/smart_list/All">
+                    <img src="https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png" alt="New Lead">
+                    <div>
+                        <div>New Lead</div>
+                        <div>Grow your database</div>
+                    </div>
+                </a>
+                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/calendars/view">
+                    <img src="https://img.icons8.com/ios/40/ffffff/calendar--v1.png" alt="Schedule">
+                    <div>
+                        <div>Schedule</div>
+                        <div>Book new meeting</div>
+                    </div>
+                </a>
+                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/social-planner/planner">
+                    <img src="https://img.icons8.com/ios/40/ffffff/share-2.png" alt="Social Post">
+                    <div>
+                        <div>Social Post</div>
+                        <div>Stay in front of your fans today!</div>
+                    </div>
+                </a>
+                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1">
+                    <img src="https://img.icons8.com/ios/40/ffffff/new-post.png" alt="Email Blast">
+                    <div>
+                        <div>Email Blast</div>
+                        <div>The GOLD is in the follow up!</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- Other widgets will be dynamically inserted here -->
     </div>
     
     <script>
@@ -73,12 +110,11 @@
                 const icons = {
                     weather: "https://img.icons8.com/ios/50/1a3557/partly-cloudy-day--v1.png",
                     tips: "https://img.icons8.com/ios/50/1a3557/idea.png",
-                    focus: "https://img.icons8.com/ios/50/1a3557/checked-checkbox.png",
-                    quickLinks: "https://img.icons8.com/ios/50/1a3557/link--v1.png"
+                    focus: "https://img.icons8.com/ios/50/1a3557/checked-checkbox.png"
                 };
                 
-                // Create main widget boxes
-                for (let i = 1; i <= 4; i++) {
+                // Create main widget boxes (only 3 now since Quick Links is in static HTML)
+                for (let i = 1; i <= 3; i++) {
                     const box = document.createElement('div');
                     box.className = 'tronbot-box';
                     
@@ -119,44 +155,6 @@
                             <input class="tronbot-todo-input" placeholder="Add task + enter...">
                         `;
                         setupTodoWidget(box);
-                    } else {
-                        // Quick Links Box - hardcoded domain, template location ID
-                        box.innerHTML = `
-                            <div class="tronbot-box-header">
-                                <img src="${icons.quickLinks}" alt="Links">
-                                Quick Links
-                            </div>
-                            <div class="tronbot-quick-links-list">
-                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/contacts/smart_list/All">
-                                    <img src="https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png" alt="New Lead">
-                                    <div>
-                                        <div>New Lead</div>
-                                        <div>Grow your database</div>
-                                    </div>
-                                </a>
-                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/calendars/view">
-                                    <img src="https://img.icons8.com/ios/40/ffffff/calendar--v1.png" alt="Schedule">
-                                    <div>
-                                        <div>Schedule</div>
-                                        <div>Book new meeting</div>
-                                    </div>
-                                </a>
-                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/social-planner/planner">
-                                    <img src="https://img.icons8.com/ios/40/ffffff/share-2.png" alt="Social Post">
-                                    <div>
-                                        <div>Social Post</div>
-                                        <div>Stay in front of your fans today!</div>
-                                    </div>
-                                </a>
-                                <a class="tronbot-quick-link-row" href="https://go.rise-crm.com/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1">
-                                    <img src="https://img.icons8.com/ios/40/ffffff/new-post.png" alt="Email Blast">
-                                    <div>
-                                        <div>Email Blast</div>
-                                        <div>The GOLD is in the follow up!</div>
-                                    </div>
-                                </a>
-                            </div>
-                        `;
                     }
                                         
                     container.appendChild(box);
