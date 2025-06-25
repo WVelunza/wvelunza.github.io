@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: GREEN; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: YELLOW; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -135,72 +135,104 @@
                 }
             }
             
-// Helper to extract domain and locationId from URL
+// Helper to extract domain and locationId from URL - COMPLETELY DYNAMIC
 function getDomainAndLocationId() {
-    console.log('=== FULL DEBUG INFO ===');
-    console.log('window.location.href:', window.location.href);
-    console.log('document.referrer:', document.referrer);
+    console.log('=== COMPLETELY DYNAMIC DETECTION ===');
     
-    // Try to get more referrer info
-    if (document.referrer) {
-        const referrerUrl = new URL(document.referrer);
-        console.log('Referrer full URL breakdown:');
-        console.log('  - origin:', referrerUrl.origin);
-        console.log('  - pathname:', referrerUrl.pathname);
-        console.log('  - search:', referrerUrl.search);
-        console.log('  - hash:', referrerUrl.hash);
-        console.log('  - full href:', referrerUrl.href);
-    }
-    
-    // Check all URL parameters on current page
-    const urlParams = new URLSearchParams(window.location.search);
-    console.log('Current page URL parameters:');
-    for (let [key, value] of urlParams) {
-        console.log(`  - ${key}:`, value);
-    }
-    
-    // Check if referrer has any useful parameters
-    if (document.referrer) {
-        try {
-            const referrerUrl = new URL(document.referrer);
-            const referrerParams = new URLSearchParams(referrerUrl.search);
-            console.log('Referrer URL parameters:');
-            for (let [key, value] of referrerParams) {
-                console.log(`  - ${key}:`, value);
-            }
-        } catch (e) {
-            console.log('No referrer params');
-        }
-    }
-    
-    // Try to extract domain and locationId
     let domain = '';
     let locationId = '';
     
-    // Get domain from referrer
+    // Method 1: Try to get complete referrer URL
     if (document.referrer) {
-        const referrerUrl = new URL(document.referrer);
-        domain = referrerUrl.origin;
-        
-        // Try to extract locationId from referrer path
-        const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
-        if (match) {
-            locationId = match[1];
-            console.log('Found locationId in referrer path:', locationId);
+        console.log('Full document.referrer:', document.referrer);
+        try {
+            const referrerUrl = new URL(document.referrer);
+            domain = referrerUrl.origin;
+            console.log('Referrer origin:', domain);
+            console.log('Referrer pathname:', referrerUrl.pathname);
+            
+            // Look for location ID pattern in referrer path
+            const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
+            if (match) {
+                locationId = match[1];
+                console.log('✅ Found locationId in referrer path:', locationId);
+            } else {
+                console.log('❌ No locationId found in referrer path');
+            }
+        } catch (e) {
+            console.log('Error parsing referrer:', e);
         }
     }
     
-    // Try to get locationId from current URL params
+    // Method 2: Try window.opener (if opened in new window/tab)
+    if (!locationId && window.opener) {
+        console.log('Trying window.opener...');
+        try {
+            const openerLocation = window.opener.location.href;
+            console.log('Opener URL:', openerLocation);
+            
+            const openerUrl = new URL(openerLocation);
+            if (!domain) domain = openerUrl.origin;
+            
+            const match = openerUrl.pathname.match(/\/location\/([^/]+)/);
+            if (match) {
+                locationId = match[1];
+                console.log('✅ Found locationId from opener:', locationId);
+            }
+        } catch (e) {
+            console.log('Cannot access opener:', e.message);
+        }
+    }
+    
+    // Method 3: Try parent window (different approach)
     if (!locationId) {
-        locationId = urlParams.get('locationId') || '';
-        if (locationId) {
-            console.log('Found locationId in URL params:', locationId);
+        console.log('Trying parent window access...');
+        try {
+            if (window.parent !== window) {
+                const parentLocation = window.parent.location;
+                console.log('Parent location accessible');
+                
+                if (!domain) domain = parentLocation.origin;
+                
+                const match = parentLocation.pathname.match(/\/location\/([^/]+)/);
+                if (match) {
+                    locationId = match[1];
+                    console.log('✅ Found locationId from parent:', locationId);
+                }
+            }
+        } catch (e) {
+            console.log('Cannot access parent:', e.message);
         }
     }
     
-    console.log('Final result - domain:', domain);
-    console.log('Final result - locationId:', locationId);
-    console.log('=== END DEBUG ===');
+    // Method 4: Check URL parameters
+    if (!locationId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        locationId = urlParams.get('locationId') || urlParams.get('location') || '';
+        if (locationId) {
+            console.log('✅ Found locationId in URL params:', locationId);
+        }
+    }
+    
+    // Method 5: Check current URL path for location ID
+    if (!locationId) {
+        const currentMatch = window.location.pathname.match(/\/location\/([^/]+)/);
+        if (currentMatch) {
+            locationId = currentMatch[1];
+            console.log('✅ Found locationId in current URL path:', locationId);
+        }
+    }
+    
+    console.log('FINAL DYNAMIC RESULT:');
+    console.log('Domain:', domain);
+    console.log('LocationId:', locationId);
+    
+    if (!domain) {
+        console.warn('⚠️ Could not determine domain dynamically');
+    }
+    if (!locationId) {
+        console.warn('⚠️ Could not determine locationId dynamically');
+    }
     
     return {
         domain: domain,
