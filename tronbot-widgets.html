@@ -22,7 +22,7 @@
         /* Todo Widget Elements */
         .tronbot-todo-header { display: flex; align-items: center; justify-content: space-between; }
         .tronbot-todo-header-left { display: flex; align-items: center; gap: 0.625rem; }
-        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: PINK; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
+        .tronbot-clear-tasks-btn { cursor: pointer; background: transparent; color: PURPLE; font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.9rem; border: 1px solid; border-radius: 0.313rem; padding: 0.313rem 0.625rem; transition: all 0.2s linear; }
         .tronbot-clear-tasks-btn:hover { background: #02a8d6; color: white; }
         .tronbot-progress-bar-bg { overflow: hidden; position: relative; width: 100%; height: 1.25rem; background: #eee; border-radius: 0.625rem; }
         .tronbot-progress-bar-fill { width: 0%; height: 100%; background: #02a8d6; transition: width 0.5s; }
@@ -135,127 +135,29 @@
                 }
             }
             
-// Helper to extract domain and locationId from URL - COMPREHENSIVE SEARCH
+// Helper to extract domain and locationId from URL - TEMPLATE VARIABLE APPROACH
 function getDomainAndLocationId() {
-    console.log('=== COMPREHENSIVE LOCATION ID SEARCH ===');
+    let domain = '';
+    let locationId = '{{location.id}}'; // Use template variable!
     
-    let domain = 'https://go.rise-crm.com'; // We know this from referrer
-    let locationId = '';
-    
-    // Method 1: Check all localStorage entries for location patterns
-    console.log('1. Checking localStorage...');
-    try {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            const value = localStorage.getItem(key);
-            console.log(`  localStorage[${key}]: ${value}`);
-            
-            // Look for patterns that might contain location ID
-            if (value) {
-                // Look for alphanumeric strings that might be location IDs
-                const matches = value.match(/[a-zA-Z0-9]{15,}/g);
-                if (matches) {
-                    console.log(`  Potential location IDs in ${key}:`, matches);
-                    // Use the first long alphanumeric string found
-                    if (!locationId && matches[0]) {
-                        locationId = matches[0];
-                        console.log(`  ✅ Using locationId from localStorage[${key}]: ${locationId}`);
-                    }
-                }
-            }
-        }
-    } catch (e) {
-        console.log('  Error accessing localStorage:', e);
-    }
-    
-    // Method 2: Check all sessionStorage entries
-    console.log('2. Checking sessionStorage...');
-    try {
-        for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i);
-            const value = sessionStorage.getItem(key);
-            console.log(`  sessionStorage[${key}]: ${value}`);
-            
-            if (value && !locationId) {
-                const matches = value.match(/[a-zA-Z0-9]{15,}/g);
-                if (matches) {
-                    console.log(`  Potential location IDs in ${key}:`, matches);
-                    locationId = matches[0];
-                    console.log(`  ✅ Using locationId from sessionStorage[${key}]: ${locationId}`);
-                }
-            }
-        }
-    } catch (e) {
-        console.log('  Error accessing sessionStorage:', e);
-    }
-    
-    // Method 3: Check all cookies
-    console.log('3. Checking cookies...');
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [key, value] = cookie.trim().split('=');
-        if (value) {
-            console.log(`  cookie[${key}]: ${value}`);
-            
-            if (!locationId) {
-                const matches = decodeURIComponent(value).match(/[a-zA-Z0-9]{15,}/g);
-                if (matches) {
-                    console.log(`  Potential location IDs in cookie ${key}:`, matches);
-                    locationId = matches[0];
-                    console.log(`  ✅ Using locationId from cookie[${key}]: ${locationId}`);
-                }
-            }
-        }
-    }
-    
-    // Method 4: Try to make an API call to get current user info
-    console.log('4. Checking if we can make API call for user info...');
-    // We'll add this as a promise-based approach
-    
-    // Method 5: Check for any global variables or window properties
-    console.log('5. Checking global variables...');
-    const globalVars = Object.keys(window).filter(key => 
-        key.toLowerCase().includes('location') || 
-        key.toLowerCase().includes('user') || 
-        key.toLowerCase().includes('account') ||
-        key.toLowerCase().includes('tenant')
-    );
-    console.log('  Global variables related to location/user:', globalVars);
-    
-    for (let varName of globalVars) {
+    // Get domain from referrer (this works and is completely dynamic)
+    if (document.referrer) {
         try {
-            const value = window[varName];
-            console.log(`  window.${varName}:`, value);
-            
-            if (value && typeof value === 'string' && !locationId) {
-                const matches = value.match(/[a-zA-Z0-9]{15,}/g);
-                if (matches) {
-                    locationId = matches[0];
-                    console.log(`  ✅ Using locationId from window.${varName}: ${locationId}`);
-                }
-            }
+            const referrerUrl = new URL(document.referrer);
+            domain = referrerUrl.origin;
         } catch (e) {
-            console.log(`  Could not access window.${varName}`);
+            console.log('Could not parse referrer URL');
         }
     }
     
-    // Method 6: Check URL parameters again (just in case)
-    console.log('6. Checking URL parameters...');
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramLocationId = urlParams.get('locationId') || urlParams.get('location') || urlParams.get('loc');
-    if (paramLocationId) {
-        locationId = paramLocationId;
-        console.log(`  ✅ Using locationId from URL params: ${locationId}`);
+    // Fallback domain if no referrer
+    if (!domain) {
+        domain = window.location.origin;
     }
     
-    console.log('COMPREHENSIVE SEARCH RESULT:');
+    console.log('Using template variables:');
     console.log('Domain:', domain);
-    console.log('LocationId:', locationId);
-    
-    if (!locationId) {
-        console.log('⚠️ No location ID found in any storage, cookies, or global variables');
-        console.log('💡 The dashboard may need to pass the location ID when linking to this widget');
-    }
+    console.log('LocationId template:', locationId);
     
     return {
         domain: domain,
