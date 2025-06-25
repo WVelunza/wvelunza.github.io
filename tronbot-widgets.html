@@ -103,7 +103,7 @@
                         `;
                         setupTipsWidget(box);
                     } else if (i === 3) {
-                        // Todo Box
+                        // To-do Box
                         box.innerHTML = `
                             <div class="tronbot-box-header tronbot-todo-header">
                                 <span class="tronbot-todo-header-left">
@@ -119,21 +119,45 @@
                             <input class="tronbot-todo-input" placeholder="Add task + enter...">
                         `;
                         setupTodoWidget(box);
-                    } else {
-                        // Quick Links Box
-                        box.innerHTML = `
-                            <div class="tronbot-box-header">
-                                <img src="${icons.quickLinks}" alt="Links">
-                                Quick Links
-                            </div>
-                            <div class="tronbot-quick-links-list"></div>
-                        `;
-                        setupQuickLinks(box);
-                    }
-                    
-                    container.appendChild(box);
-                }
-            }
+} else {
+    // Quick Links Box - with template variables directly in HTML
+    box.innerHTML = `
+        <div class="tronbot-box-header">
+            <img src="${icons.quickLinks}" alt="Links">
+            Quick Links
+        </div>
+        <div class="tronbot-quick-links-list">
+            <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/contacts/smart_list/All', '_parent')">
+                <img src="https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png" alt="New Lead">
+                <div>
+                    <div>New Lead</div>
+                    <div>Grow your database</div>
+                </div>
+            </div>
+            <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/calendars/view', '_parent')">
+                <img src="https://img.icons8.com/ios/40/ffffff/calendar--v1.png" alt="Schedule">
+                <div>
+                    <div>Schedule</div>
+                    <div>Book new meeting</div>
+                </div>
+            </div>
+            <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/marketing/social-planner/planner', '_parent')">
+                <img src="https://img.icons8.com/ios/40/ffffff/share-2.png" alt="Social Post">
+                <div>
+                    <div>Social Post</div>
+                    <div>Stay in front of your fans today!</div>
+                </div>
+            </div>
+            <div class="tronbot-quick-link-row" onclick="window.open('{{location.domain}}/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1', '_parent')">
+                <img src="https://img.icons8.com/ios/40/ffffff/new-post.png" alt="Email Blast">
+                <div>
+                    <div>Email Blast</div>
+                    <div>The GOLD is in the follow up!</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
             
             // Helper to extract domain from referrer (for other widgets that might need it)
             function getDomainFromReferrer() {
@@ -146,45 +170,6 @@
                     }
                 }
                 return window.location.origin;
-            }
-            
-            // Quick Links Setup
-            function setupQuickLinks(quickLinksBox) {
-                // Get domain dynamically from referrer
-                const domain = getDomainFromReferrer();
-                
-                console.log('Quick Links using domain:', domain);
-                console.log('Quick Links will use template variable {{location.id}} for location ID');
-                
-                // Use template variable directly in URLs - this should be processed by the templating system
-                const quickLinks = [
-                    { heading: "New Lead", description: "Grow your database", url: `${domain}/v2/location/{{location.id}}/contacts/smart_list/All` },
-                    { heading: "Schedule", description: "Book new meeting", url: `${domain}/v2/location/{{location.id}}/calendars/view` },
-                    { heading: "Social Post", description: "Stay in front of your fans today!", url: `${domain}/v2/location/{{location.id}}/marketing/social-planner/planner` },
-                    { heading: "Email Blast", description: "The GOLD is in the follow up!", url: `${domain}/v2/location/{{location.id}}/marketing/emails/scheduled?pageNumber=1` }
-                ];
-                
-                const quickLinksList = quickLinksBox.querySelector('.tronbot-quick-links-list');
-                const quickLinksIcons = {
-                    "New Lead": "https://img.icons8.com/ios/40/ffffff/add-user-group-man-man.png",
-                    "Schedule": "https://img.icons8.com/ios/40/ffffff/calendar--v1.png",
-                    "Social Post": "https://img.icons8.com/ios/40/ffffff/share-2.png",
-                    "Email Blast": "https://img.icons8.com/ios/40/ffffff/new-post.png"
-                };
-                
-                quickLinks.forEach(link => {
-                    const row = document.createElement('div');
-                    row.className = 'tronbot-quick-link-row';
-                    row.innerHTML = `
-                        <img src="${quickLinksIcons[link.heading] || ''}" alt="${link.heading}">
-                        <div>
-                            <div>${link.heading}</div>
-                            <div>${link.description}</div>
-                        </div>
-                    `;
-                    row.addEventListener('click', () => window.open(link.url, '_parent'));
-                    quickLinksList.appendChild(row);
-                });
             }
             
             // Weather Widget Setup
