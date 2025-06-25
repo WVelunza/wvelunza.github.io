@@ -135,16 +135,58 @@
                 }
             }
             
-            // Helper to extract domain and locationId from URL
-            function getDomainAndLocationId() {
-                const { origin, pathname } = window.location;
-                const match = pathname.match(/\/location\/([^/]+)/);
-                
+// Helper to extract domain and locationId from URL parameters or parent window
+function getDomainAndLocationId() {
+    // Method 1: Try to get from URL parameters (most reliable for embedded content)
+    const urlParams = new URLSearchParams(window.location.search);
+    const domain = urlParams.get('domain');
+    const locationId = urlParams.get('locationId');
+    
+    if (domain && locationId) {
+        return { domain, locationId };
+    }
+    
+    // Method 2: Try to get from document.referrer
+    if (document.referrer) {
+        try {
+            const referrerUrl = new URL(document.referrer);
+            const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
+            if (match) {
                 return {
-                    domain: origin,
-                    locationId: match ? match[1] : ''
+                    domain: referrerUrl.origin,
+                    locationId: match[1]
                 };
             }
+        } catch (e) {
+            console.log('Could not parse referrer URL');
+        }
+    }
+    
+    // Method 3: Try parent window (may fail due to cross-origin)
+    try {
+        if (window.parent !== window) {
+            const { origin, pathname } = window.parent.location;
+            const match = pathname.match(/\/location\/([^/]+)/);
+            if (match) {
+                return {
+                    domain: origin,
+                    locationId: match[1]
+                };
+            }
+        }
+    } catch (error) {
+        console.log('Cannot access parent location due to cross-origin restrictions');
+    }
+    
+    // Fallback: Use current window location (original behavior)
+    const { origin, pathname } = window.location;
+    const match = pathname.match(/\/location\/([^/]+)/);
+    
+    return {
+        domain: origin,
+        locationId: match ? match[1] : ''
+    };
+}
             
             // Quick Links Setup
             function setupQuickLinks(quickLinksBox) {
