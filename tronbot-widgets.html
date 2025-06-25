@@ -135,86 +135,77 @@
                 }
             }
             
-// Helper to extract domain and locationId from URL (DEBUG VERSION)
+// Helper to extract domain and locationId from URL
 function getDomainAndLocationId() {
-    console.log('=== DEBUGGING DOMAIN AND LOCATION ID ===');
+    console.log('=== FULL DEBUG INFO ===');
+    console.log('window.location.href:', window.location.href);
+    console.log('document.referrer:', document.referrer);
     
-    // Method 1: Try to get from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const domain = urlParams.get('domain');
-    const locationId = urlParams.get('locationId');
-    
-    console.log('Current URL:', window.location.href);
-    console.log('URL Params - domain:', domain);
-    console.log('URL Params - locationId:', locationId);
-    
-    if (domain && locationId) {
-        console.log('Using URL parameters method');
-        return { domain, locationId };
+    // Try to get more referrer info
+    if (document.referrer) {
+        const referrerUrl = new URL(document.referrer);
+        console.log('Referrer full URL breakdown:');
+        console.log('  - origin:', referrerUrl.origin);
+        console.log('  - pathname:', referrerUrl.pathname);
+        console.log('  - search:', referrerUrl.search);
+        console.log('  - hash:', referrerUrl.hash);
+        console.log('  - full href:', referrerUrl.href);
     }
     
-    // Method 2: Try to get from document.referrer
-    console.log('Document referrer:', document.referrer);
+    // Check all URL parameters on current page
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log('Current page URL parameters:');
+    for (let [key, value] of urlParams) {
+        console.log(`  - ${key}:`, value);
+    }
+    
+    // Check if referrer has any useful parameters
     if (document.referrer) {
         try {
             const referrerUrl = new URL(document.referrer);
-            console.log('Referrer origin:', referrerUrl.origin);
-            console.log('Referrer pathname:', referrerUrl.pathname);
-            
-            const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
-            console.log('Referrer path match:', match);
-            
-            if (match) {
-                const result = {
-                    domain: referrerUrl.origin,
-                    locationId: match[1]
-                };
-                console.log('Using referrer method:', result);
-                return result;
+            const referrerParams = new URLSearchParams(referrerUrl.search);
+            console.log('Referrer URL parameters:');
+            for (let [key, value] of referrerParams) {
+                console.log(`  - ${key}:`, value);
             }
         } catch (e) {
-            console.log('Could not parse referrer URL:', e);
+            console.log('No referrer params');
         }
     }
     
-    // Method 3: Try parent window
-    try {
-        if (window.parent !== window) {
-            console.log('Trying parent window...');
-            const { origin, pathname } = window.parent.location;
-            console.log('Parent origin:', origin);
-            console.log('Parent pathname:', pathname);
-            
-            const match = pathname.match(/\/location\/([^/]+)/);
-            console.log('Parent path match:', match);
-            
-            if (match) {
-                const result = {
-                    domain: origin,
-                    locationId: match[1]
-                };
-                console.log('Using parent window method:', result);
-                return result;
-            }
+    // Try to extract domain and locationId
+    let domain = '';
+    let locationId = '';
+    
+    // Get domain from referrer
+    if (document.referrer) {
+        const referrerUrl = new URL(document.referrer);
+        domain = referrerUrl.origin;
+        
+        // Try to extract locationId from referrer path
+        const match = referrerUrl.pathname.match(/\/location\/([^/]+)/);
+        if (match) {
+            locationId = match[1];
+            console.log('Found locationId in referrer path:', locationId);
         }
-    } catch (error) {
-        console.log('Cannot access parent location:', error);
     }
     
-    // Fallback: Use current window location
-    console.log('Using fallback method (current window)');
-    const { origin, pathname } = window.location;
-    const match = pathname.match(/\/location\/([^/]+)/);
+    // Try to get locationId from current URL params
+    if (!locationId) {
+        locationId = urlParams.get('locationId') || '';
+        if (locationId) {
+            console.log('Found locationId in URL params:', locationId);
+        }
+    }
     
-    const result = {
-        domain: origin,
-        locationId: match ? match[1] : ''
-    };
-    
-    console.log('Final result:', result);
+    console.log('Final result - domain:', domain);
+    console.log('Final result - locationId:', locationId);
     console.log('=== END DEBUG ===');
     
-    return result;
+    return {
+        domain: domain,
+        locationId: locationId
+    };
 }
             
             // Quick Links Setup
